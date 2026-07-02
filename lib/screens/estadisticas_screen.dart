@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
 import '../models/obra.dart';
@@ -14,8 +17,7 @@ class EstadisticasScreen extends StatelessWidget {
     final List<Obra> obras =
         StorageService.cargarObras();
 
-    final totalObras =
-        obras.length;
+    final totalObras = obras.length;
 
     final presupuesto =
         obras.fold<double>(
@@ -88,36 +90,98 @@ class EstadisticasScreen extends StatelessWidget {
       );
     }
 
+    Future<void> importarBackup() async {
+      const typeGroup =
+          XTypeGroup(
+        label: 'json',
+        extensions: [
+          'json',
+        ],
+      );
+
+      final file =
+          await openFile(
+        acceptedTypeGroups: [
+          typeGroup,
+        ],
+      );
+
+      if (file == null) {
+        return;
+      }
+
+      final contenido =
+          await File(
+        file.path,
+      ).readAsString();
+
+      await BackupService
+          .importarBackup(
+        contenido,
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Backup restaurado correctamente',
+            ),
+          ),
+        );
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text(
-          'Estadísticas',
+        title: const Text(
+          'Resumen',
         ),
         actions: [
-          IconButton(
-            icon:
-                const Icon(
-              Icons.backup,
-            ),
-            tooltip:
-                'Crear backup',
-            onPressed: () async {
-              await BackupService
-                  .exportarBackup();
+          PopupMenuButton<
+              String>(
+            onSelected:
+                (value) async {
+              if (value ==
+                  'export') {
+                await BackupService
+                    .exportarBackup();
 
-              if (context.mounted) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Backup creado',
+                if (context
+                    .mounted) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Backup creado',
+                      ),
                     ),
-                  ),
-                );
+                  );
+                }
+              }
+
+              if (value ==
+                  'import') {
+                await importarBackup();
               }
             },
+            itemBuilder: (_) =>
+                const [
+              PopupMenuItem(
+                value: 'export',
+                child: Text(
+                  'Exportar backup',
+                ),
+              ),
+              PopupMenuItem(
+                value: 'import',
+                child: Text(
+                  'Importar backup',
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -135,7 +199,8 @@ class EstadisticasScreen extends StatelessWidget {
           tarjeta(
             'Presupuesto',
             '${presupuesto.toStringAsFixed(2)} EUR',
-            Icons.account_balance_wallet,
+            Icons
+                .account_balance_wallet,
           ),
           tarjeta(
             'Cobrado',

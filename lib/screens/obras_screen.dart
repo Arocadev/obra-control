@@ -12,6 +12,7 @@ class ObrasScreen extends StatefulWidget {
 
 class _ObrasScreenState extends State<ObrasScreen> {
   List<Obra> obras = [];
+  String busqueda = '';
 
   @override
   void initState() {
@@ -26,6 +27,20 @@ class _ObrasScreenState extends State<ObrasScreen> {
 
   Future<void> guardarObras() async {
     await StorageService.guardarObras(obras);
+  }
+
+  List<Obra> get obrasFiltradas {
+    if (busqueda.isEmpty) {
+      return obras;
+    }
+
+    return obras.where((obra) {
+      return obra.nombre
+          .toLowerCase()
+          .contains(
+            busqueda.toLowerCase(),
+          );
+    }).toList();
   }
 
   void crearObra() {
@@ -142,8 +157,7 @@ class _ObrasScreenState extends State<ObrasScreen> {
           context: context,
           builder: (_) {
             return AlertDialog(
-              title:
-                  const Text('Eliminar obra'),
+              title: const Text('Eliminar obra'),
               content: Text(
                 '¿Eliminar "$nombre"?',
               ),
@@ -155,8 +169,7 @@ class _ObrasScreenState extends State<ObrasScreen> {
                       false,
                     );
                   },
-                  child:
-                      const Text('Cancelar'),
+                  child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -165,8 +178,7 @@ class _ObrasScreenState extends State<ObrasScreen> {
                       true,
                     );
                   },
-                  child:
-                      const Text('Eliminar'),
+                  child: const Text('Eliminar'),
                 ),
               ],
             );
@@ -181,83 +193,120 @@ class _ObrasScreenState extends State<ObrasScreen> {
       appBar: AppBar(
         title: const Text('Obras'),
       ),
-      body: obras.isEmpty
-          ? const Center(
-              child: Text(
-                'No hay obras todavía',
-                style: TextStyle(fontSize: 18),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              decoration: const InputDecoration(
+                hintText: 'Buscar obra...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
               ),
-            )
-          : ListView.builder(
-              itemCount: obras.length,
-              itemBuilder: (context, index) {
-                final obra = obras[index];
+              onChanged: (value) {
+                setState(() {
+                  busqueda = value;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: obrasFiltradas.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No hay obras',
+                    ),
+                  )
+                : ListView.builder(
+                    itemCount:
+                        obrasFiltradas.length,
+                    itemBuilder:
+                        (context, index) {
+                      final obra =
+                          obrasFiltradas[index];
 
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  child: ListTile(
-                    title: Text(obra.nombre),
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              DetalleObraScreen(
-                            obra: obra,
+                      return Card(
+                        margin:
+                            const EdgeInsets
+                                .symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        child: ListTile(
+                          title:
+                              Text(obra.nombre),
+                          subtitle:
+                              Text(obra.estado),
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    DetalleObraScreen(
+                                  obra: obra,
+                                ),
+                              ),
+                            );
+
+                            await guardarObras();
+
+                            setState(() {});
+                          },
+                          trailing:
+                              PopupMenuButton<
+                                  String>(
+                            onSelected:
+                                (value) async {
+                              final realIndex =
+                                  obras.indexOf(
+                                obra,
+                              );
+
+                              if (value ==
+                                  'edit') {
+                                await editarObra(
+                                  realIndex,
+                                );
+                              }
+
+                              if (value ==
+                                  'delete') {
+                                final borrar =
+                                    await confirmarEliminar(
+                                  obra.nombre,
+                                );
+
+                                if (borrar) {
+                                  await eliminarObra(
+                                    realIndex,
+                                  );
+                                }
+                              }
+                            },
+                            itemBuilder:
+                                (_) => const [
+                              PopupMenuItem(
+                                value: 'edit',
+                                child: Text(
+                                  'Editar',
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value:
+                                    'delete',
+                                child: Text(
+                                  'Eliminar',
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
-
-                      await guardarObras();
-
-                      setState(() {});
                     },
-                    trailing:
-                        PopupMenuButton<String>(
-                      onSelected:
-                          (value) async {
-                        if (value ==
-                            'edit') {
-                          await editarObra(
-                            index,
-                          );
-                        }
-
-                        if (value ==
-                            'delete') {
-                          final borrar =
-                              await confirmarEliminar(
-                            obra.nombre,
-                          );
-
-                          if (borrar) {
-                            await eliminarObra(
-                              index,
-                            );
-                          }
-                        }
-                      },
-                      itemBuilder: (_) => const [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child:
-                              Text('Editar'),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child:
-                              Text('Eliminar'),
-                        ),
-                      ],
-                    ),
                   ),
-                );
-              },
-            ),
+          ),
+        ],
+      ),
       floatingActionButton:
           FloatingActionButton(
         onPressed: crearObra,

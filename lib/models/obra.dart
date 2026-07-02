@@ -22,10 +22,22 @@ class Obra extends HiveObject {
   @HiveField(4)
   List<MaterialObra> materiales;
 
+  @HiveField(5)
+  String estado;
+
+  @HiveField(6)
+  DateTime? fechaInicio;
+
+  @HiveField(7)
+  DateTime? fechaFin;
+
   Obra({
     required this.nombre,
     this.presupuesto = 0,
     this.cobrado = 0,
+    this.estado = 'Pendiente',
+    this.fechaInicio,
+    this.fechaFin,
     List<Tarea>? tareas,
     List<MaterialObra>? materiales,
   })  : tareas = tareas ?? [],

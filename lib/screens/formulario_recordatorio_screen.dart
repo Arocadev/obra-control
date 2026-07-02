@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/recordatorio.dart';
+import '../services/notification_service.dart';
 import '../services/reminder_service.dart';
 import '../widgets/selector_recordatorio.dart';
 
@@ -11,15 +12,13 @@ class FormularioRecordatorioScreen
   });
 
   @override
-  State<
-          FormularioRecordatorioScreen>
+  State<FormularioRecordatorioScreen>
       createState() =>
           _FormularioRecordatorioScreenState();
 }
 
 class _FormularioRecordatorioScreenState
-    extends State<
-        FormularioRecordatorioScreen> {
+    extends State<FormularioRecordatorioScreen> {
   final tituloController =
       TextEditingController();
 
@@ -55,9 +54,20 @@ class _FormularioRecordatorioScreenState
           hora1,
     );
 
-    await ReminderService
-        .guardar(
+    await ReminderService.guardar(
       recordatorio,
+    );
+
+    await NotificationService
+        .mostrarNotificacion(
+      id:
+          DateTime.now()
+              .millisecondsSinceEpoch %
+          2147483647,
+      titulo:
+          'Recordatorio creado',
+      cuerpo:
+          recordatorio.titulo,
     );
 
     if (!mounted) return;

@@ -91,9 +91,18 @@ class _RecordatoriosScreenState
                       child:
                           ListTile(
                         leading:
-                            const Icon(
-                          Icons
-                              .notifications,
+                            Icon(
+                          r.completado
+                              ? Icons
+                                  .check_circle
+                              : Icons
+                                  .notifications,
+                          color:
+                              r.completado
+                                  ? Colors
+                                      .green
+                                  : Colors
+                                      .purple,
                         ),
                         title:
                             Text(
@@ -103,6 +112,15 @@ class _RecordatoriosScreenState
                             Text(
                           '${r.fecha.day}/${r.fecha.month}/${r.fecha.year}',
                         ),
+                        onTap:
+                            () async {
+                          r.completado =
+                              !r.completado;
+
+                          await r.save();
+
+                          cargar();
+                        },
                         trailing:
                             IconButton(
                           icon:

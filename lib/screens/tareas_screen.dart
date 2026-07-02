@@ -67,10 +67,102 @@ class _TareasScreenState
     );
   }
 
+  void editarTarea(int index) {
+    final controller =
+        TextEditingController(
+      text:
+          widget.obra.tareas[index].nombre,
+    );
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title:
+              const Text('Editar tarea'),
+          content: TextField(
+            controller: controller,
+            autofocus: true,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child:
+                  const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (controller.text
+                    .trim()
+                    .isEmpty) {
+                  return;
+                }
+
+                setState(() {
+                  widget.obra
+                          .tareas[index]
+                          .nombre =
+                      controller.text
+                          .trim();
+                });
+
+                Navigator.pop(context);
+              },
+              child:
+                  const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void eliminarTarea(int index) {
     setState(() {
       widget.obra.tareas.removeAt(index);
     });
+  }
+
+  Future<bool> confirmarEliminar(
+    String nombre,
+  ) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title:
+                  const Text('Eliminar tarea'),
+              content: Text(
+                '¿Eliminar "$nombre"?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      false,
+                    );
+                  },
+                  child:
+                      const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      true,
+                    );
+                  },
+                  child:
+                      const Text('Eliminar'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   @override
@@ -110,8 +202,7 @@ class _TareasScreenState
                               .radio_button_unchecked,
                       color:
                           tarea.hecha
-                              ? Colors
-                                  .green
+                              ? Colors.green
                               : null,
                     ),
                     title: Text(
@@ -128,7 +219,7 @@ class _TareasScreenState
                         PopupMenuButton<
                             String>(
                       onSelected:
-                          (value) {
+                          (value) async {
                         if (value ==
                             'toggle') {
                           setState(() {
@@ -139,10 +230,24 @@ class _TareasScreenState
                         }
 
                         if (value ==
-                            'delete') {
-                          eliminarTarea(
+                            'edit') {
+                          editarTarea(
                             index,
                           );
+                        }
+
+                        if (value ==
+                            'delete') {
+                          final borrar =
+                              await confirmarEliminar(
+                            tarea.nombre,
+                          );
+
+                          if (borrar) {
+                            eliminarTarea(
+                              index,
+                            );
+                          }
                         }
                       },
                       itemBuilder:
@@ -157,11 +262,15 @@ class _TareasScreenState
                           ),
                         ),
                         const PopupMenuItem(
+                          value: 'edit',
+                          child:
+                              Text('Editar'),
+                        ),
+                        const PopupMenuItem(
                           value:
                               'delete',
-                          child: Text(
-                            'Eliminar',
-                          ),
+                          child:
+                              Text('Eliminar'),
                         ),
                       ],
                     ),
@@ -172,9 +281,7 @@ class _TareasScreenState
       floatingActionButton:
           FloatingActionButton(
         onPressed: crearTarea,
-        child: const Icon(
-          Icons.add,
-        ),
+        child: const Icon(Icons.add),
       ),
     );
   }

@@ -48,7 +48,10 @@ class _MaterialesScreenState
                   controller:
                       cantidadController,
                   keyboardType:
-                      TextInputType.number,
+                      const TextInputType
+                          .numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration:
                       const InputDecoration(
                     labelText: 'Cantidad',
@@ -58,7 +61,10 @@ class _MaterialesScreenState
                 TextField(
                   controller: precioController,
                   keyboardType:
-                      TextInputType.number,
+                      const TextInputType
+                          .numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration:
                       const InputDecoration(
                     labelText:
@@ -73,7 +79,8 @@ class _MaterialesScreenState
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Cancelar'),
+              child:
+                  const Text('Cancelar'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -86,13 +93,21 @@ class _MaterialesScreenState
                 final cantidad =
                     double.tryParse(
                           cantidadController
-                              .text,
+                              .text
+                              .replaceAll(
+                                ',',
+                                '.',
+                              ),
                         ) ??
                         0;
 
                 final precio =
                     double.tryParse(
-                          precioController.text,
+                          precioController.text
+                              .replaceAll(
+                                ',',
+                                '.',
+                              ),
                         ) ??
                         0;
 
@@ -100,22 +115,206 @@ class _MaterialesScreenState
                   widget.obra.materiales.add(
                     MaterialObra(
                       nombre:
-                          nombreController.text
+                          nombreController
+                              .text
                               .trim(),
                       cantidad: cantidad,
-                      precioUnidad: precio,
+                      precioUnidad:
+                          precio,
                     ),
                   );
                 });
 
                 Navigator.pop(context);
               },
-              child: const Text('Guardar'),
+              child:
+                  const Text('Guardar'),
             ),
           ],
         );
       },
     );
+  }
+
+  void editarMaterial(int index) {
+    final material =
+        widget.obra.materiales[index];
+
+    final nombreController =
+        TextEditingController(
+      text: material.nombre,
+    );
+
+    final cantidadController =
+        TextEditingController(
+      text:
+          material.cantidad == 0
+              ? ''
+              : material.cantidad
+                  .toString(),
+    );
+
+    final precioController =
+        TextEditingController(
+      text:
+          material.precioUnidad == 0
+              ? ''
+              : material
+                  .precioUnidad
+                  .toString(),
+    );
+
+    showDialog(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title:
+              const Text('Editar material'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize:
+                  MainAxisSize.min,
+              children: [
+                TextField(
+                  controller:
+                      nombreController,
+                  decoration:
+                      const InputDecoration(
+                    labelText: 'Nombre',
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                TextField(
+                  controller:
+                      cantidadController,
+                  keyboardType:
+                      const TextInputType
+                          .numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration:
+                      const InputDecoration(
+                    labelText: 'Cantidad',
+                  ),
+                ),
+                const SizedBox(
+                  height: 12,
+                ),
+                TextField(
+                  controller:
+                      precioController,
+                  keyboardType:
+                      const TextInputType
+                          .numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration:
+                      const InputDecoration(
+                    labelText:
+                        'Precio unidad (€)',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child:
+                  const Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final cantidad =
+                    double.tryParse(
+                          cantidadController
+                              .text
+                              .replaceAll(
+                                ',',
+                                '.',
+                              ),
+                        ) ??
+                        0;
+
+                final precio =
+                    double.tryParse(
+                          precioController
+                              .text
+                              .replaceAll(
+                                ',',
+                                '.',
+                              ),
+                        ) ??
+                        0;
+
+                setState(() {
+                  material.nombre =
+                      nombreController
+                          .text
+                          .trim();
+
+                  material.cantidad =
+                      cantidad;
+
+                  material
+                          .precioUnidad =
+                      precio;
+                });
+
+                Navigator.pop(context);
+              },
+              child:
+                  const Text('Guardar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> confirmarEliminar(
+    String nombre,
+  ) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (_) {
+            return AlertDialog(
+              title: const Text(
+                'Eliminar material',
+              ),
+              content: Text(
+                '¿Eliminar "$nombre"?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      false,
+                    );
+                  },
+                  child:
+                      const Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                      true,
+                    );
+                  },
+                  child:
+                      const Text('Eliminar'),
+                ),
+              ],
+            );
+          },
+        ) ??
+        false;
   }
 
   double get total {
@@ -174,43 +373,53 @@ class _MaterialesScreenState
                           subtitle: Text(
                             '${material.cantidad} x ${material.precioUnidad.toStringAsFixed(2)} €',
                           ),
-                          trailing: Column(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .center,
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .end,
-                            children: [
-                              Text(
-                                '${material.total.toStringAsFixed(2)} €',
-                              ),
+                          trailing:
                               PopupMenuButton<
                                   String>(
-                                padding:
-                                    EdgeInsets.zero,
-                                onSelected:
-                                    (value) {
-                                  if (value ==
-                                      'delete') {
-                                    setState(() {
-                                      materiales
-                                          .removeAt(
-                                        index,
-                                      );
-                                    });
-                                  }
-                                },
-                                itemBuilder:
-                                    (_) => const [
-                                  PopupMenuItem(
-                                    value:
-                                        'delete',
-                                    child: Text(
-                                      'Eliminar',
-                                    ),
-                                  ),
-                                ],
+                            onSelected:
+                                (
+                                  value,
+                                ) async {
+                              if (value ==
+                                  'edit') {
+                                editarMaterial(
+                                  index,
+                                );
+                              }
+
+                              if (value ==
+                                  'delete') {
+                                final borrar =
+                                    await confirmarEliminar(
+                                  material
+                                      .nombre,
+                                );
+
+                                if (borrar) {
+                                  setState(() {
+                                    materiales
+                                        .removeAt(
+                                      index,
+                                    );
+                                  });
+                                }
+                              }
+                            },
+                            itemBuilder:
+                                (_) => const [
+                              PopupMenuItem(
+                                value:
+                                    'edit',
+                                child: Text(
+                                  'Editar',
+                                ),
+                              ),
+                              PopupMenuItem(
+                                value:
+                                    'delete',
+                                child: Text(
+                                  'Eliminar',
+                                ),
                               ),
                             ],
                           ),
@@ -221,21 +430,27 @@ class _MaterialesScreenState
           ),
           Container(
             padding:
-                const EdgeInsets.all(16),
+                const EdgeInsets.all(
+              16,
+            ),
             child: Column(
               children: [
                 Text(
                   'Total: ${total.toStringAsFixed(2)} €',
-                  style: const TextStyle(
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                     fontWeight:
                         FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(
+                  height: 8,
+                ),
                 Text(
                   'Total + IVA: ${totalConIva.toStringAsFixed(2)} €',
-                  style: const TextStyle(
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                     fontWeight:
                         FontWeight.bold,
@@ -249,7 +464,8 @@ class _MaterialesScreenState
       floatingActionButton:
           FloatingActionButton(
         onPressed: crearMaterial,
-        child: const Icon(Icons.add),
+        child:
+            const Icon(Icons.add),
       ),
     );
   }

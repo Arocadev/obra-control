@@ -21,13 +21,16 @@ class RecordatorioAdapter extends TypeAdapter<Recordatorio> {
       descripcion: fields[1] as String,
       fecha: fields[2] as DateTime,
       completado: fields[3] as bool,
+      avisarDiaAntes: fields[4] as bool,
+      avisar6HorasAntes: fields[5] as bool,
+      avisar1HoraAntes: fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Recordatorio obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.titulo)
       ..writeByte(1)
@@ -35,7 +38,13 @@ class RecordatorioAdapter extends TypeAdapter<Recordatorio> {
       ..writeByte(2)
       ..write(obj.fecha)
       ..writeByte(3)
-      ..write(obj.completado);
+      ..write(obj.completado)
+      ..writeByte(4)
+      ..write(obj.avisarDiaAntes)
+      ..writeByte(5)
+      ..write(obj.avisar6HorasAntes)
+      ..writeByte(6)
+      ..write(obj.avisar1HoraAntes);
   }
 
   @override

@@ -118,7 +118,11 @@ class _RecordatoriosScreenState
                         ),
                         subtitle:
                             Text(
-                          '${r.fecha.day}/${r.fecha.month}/${r.fecha.year}',
+                          '${r.fecha.day.toString().padLeft(2, '0')}/'
+                          '${r.fecha.month.toString().padLeft(2, '0')}/'
+                          '${r.fecha.year} · '
+                          '${r.fecha.hour.toString().padLeft(2, '0')}:'
+                          '${r.fecha.minute.toString().padLeft(2, '0')}',
                         ),
                         trailing:
                             PopupMenuButton<
@@ -150,16 +154,24 @@ class _RecordatoriosScreenState
 
                             if (value ==
                                 'editar') {
-                              ScaffoldMessenger.of(
+                              final editado =
+                                  await Navigator.push(
                                 context,
-                              ).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text(
-                                    'Próximamente',
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      FormularioRecordatorioScreen(
+                                    recordatorio:
+                                        r,
+                                    indice:
+                                        index,
                                   ),
                                 ),
                               );
+
+                              if (editado ==
+                                  true) {
+                                cargar();
+                              }
                             }
                           },
                           itemBuilder:

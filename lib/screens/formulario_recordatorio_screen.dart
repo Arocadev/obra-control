@@ -7,8 +7,15 @@ import '../widgets/selector_recordatorio.dart';
 
 class FormularioRecordatorioScreen
     extends StatefulWidget {
+  final Recordatorio?
+      recordatorio;
+
+  final int? indice;
+
   const FormularioRecordatorioScreen({
     super.key,
+    this.recordatorio,
+    this.indice,
   });
 
   @override
@@ -18,7 +25,8 @@ class FormularioRecordatorioScreen
 }
 
 class _FormularioRecordatorioScreenState
-    extends State<FormularioRecordatorioScreen> {
+    extends State<
+        FormularioRecordatorioScreen> {
   final tituloController =
       TextEditingController();
 
@@ -31,6 +39,33 @@ class _FormularioRecordatorioScreenState
   bool diaAntes = true;
   bool horas6 = false;
   bool hora1 = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final r =
+        widget.recordatorio;
+
+    if (r != null) {
+      tituloController.text =
+          r.titulo;
+
+      descripcionController.text =
+          r.descripcion;
+
+      fecha = r.fecha;
+
+      diaAntes =
+          r.avisarDiaAntes;
+
+      horas6 =
+          r.avisar6HorasAntes;
+
+      hora1 =
+          r.avisar1HoraAntes;
+    }
+  }
 
   Future<void> guardar() async {
     if (tituloController.text
@@ -46,6 +81,10 @@ class _FormularioRecordatorioScreenState
       descripcion:
           descripcionController.text,
       fecha: fecha,
+      completado:
+          widget.recordatorio
+                  ?.completado ??
+              false,
       avisarDiaAntes:
           diaAntes,
       avisar6HorasAntes:
@@ -54,21 +93,31 @@ class _FormularioRecordatorioScreenState
           hora1,
     );
 
-    await ReminderService.guardar(
-      recordatorio,
-    );
+    if (widget.indice ==
+        null) {
+      await ReminderService
+          .guardar(
+        recordatorio,
+      );
 
-    await NotificationService
-        .mostrarNotificacion(
-      id:
-          DateTime.now()
-              .millisecondsSinceEpoch %
-          2147483647,
-      titulo:
-          'Recordatorio creado',
-      cuerpo:
-          recordatorio.titulo,
-    );
+      await NotificationService
+          .mostrarNotificacion(
+        id:
+            DateTime.now()
+                    .millisecondsSinceEpoch %
+                2147483647,
+        titulo:
+            'Recordatorio creado',
+        cuerpo:
+            recordatorio.titulo,
+      );
+    } else {
+      await ReminderService
+          .actualizar(
+        widget.indice!,
+        recordatorio,
+      );
+    }
 
     if (!mounted) return;
 
@@ -84,8 +133,11 @@ class _FormularioRecordatorioScreenState
   ) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Nuevo recordatorio',
+        title: Text(
+          widget.recordatorio ==
+                  null
+              ? 'Nuevo recordatorio'
+              : 'Editar recordatorio',
         ),
       ),
       body: Padding(
@@ -242,8 +294,11 @@ class _FormularioRecordatorioScreenState
             ElevatedButton(
               onPressed:
                   guardar,
-              child: const Text(
-                'Guardar',
+              child: Text(
+                widget.recordatorio ==
+                        null
+                    ? 'Guardar'
+                    : 'Actualizar',
               ),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'models/cobro.dart';
@@ -84,6 +85,8 @@ class ObraControlApp
           false,
       title: 'ObraControl',
       theme: ThemeData(
+        textTheme:
+            GoogleFonts.interTextTheme(),
         colorScheme:
             ColorScheme.fromSeed(
           seedColor:
@@ -92,15 +95,22 @@ class ObraControlApp
         useMaterial3: true,
       ),
       localizationsDelegates:
-          GlobalMaterialLocalizations
-              .delegates,
-      supportedLocales: const [
+          const [
+        GlobalMaterialLocalizations
+            .delegate,
+        GlobalWidgetsLocalizations
+            .delegate,
+        GlobalCupertinoLocalizations
+            .delegate,
+      ],
+      supportedLocales:
+          const [
         Locale('es'),
       ],
-      locale: const Locale(
-        'es',
-      ),
-      home: const HomeScreen(),
+      locale:
+          const Locale('es'),
+      home:
+          const HomeScreen(),
     );
   }
 }

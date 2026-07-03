@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../models/cobro.dart';
 import '../models/evento_calendario.dart';
-import '../models/obra.dart';
-import '../models/pago.dart';
 import '../services/storage_service.dart';
 import '../widgets/leyenda_calendario.dart';
 import 'eventos_dia_screen.dart';
@@ -156,12 +153,14 @@ class _CalendarioScreenState
 
     for (final r in recordatorios) {
       if (!r.completado) {
+        final hora =
+            '${r.fecha.hour.toString().padLeft(2, '0')}:${r.fecha.minute.toString().padLeft(2, '0')}';
+
         todosEventos.add(
           EventoCalendario(
-            fecha:
-                r.fecha,
+            fecha: r.fecha,
             titulo:
-                'Recordatorio: ${r.titulo}',
+                '$hora · ${r.titulo}',
             color:
                 Colors.purple,
           ),
@@ -228,21 +227,58 @@ class _CalendarioScreenState
           'Calendario',
         ),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications,
-            ),
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) =>
-                      const RecordatoriosScreen(),
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications,
                 ),
-              );
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const RecordatoriosScreen(),
+                    ),
+                  );
 
-              cargarEventos();
-            },
+                  cargarEventos();
+                },
+              ),
+              if (StorageService
+                  .cargarRecordatorios()
+                  .where(
+                    (r) => !r.completado,
+                  )
+                  .isNotEmpty)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.all(
+                      4,
+                    ),
+                    decoration:
+                        const BoxDecoration(
+                      color: Colors.red,
+                      shape:
+                          BoxShape.circle,
+                    ),
+                    child: Text(
+                      '${StorageService.cargarRecordatorios().where((r) => !r.completado).length}',
+                      style:
+                          const TextStyle(
+                        color:
+                            Colors.white,
+                        fontSize: 10,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),

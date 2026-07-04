@@ -1,3 +1,4 @@
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -20,6 +21,8 @@ Future<void> main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  await AndroidAlarmManager.initialize();
 
   await Hive.initFlutter();
 
@@ -47,7 +50,7 @@ class ObraControlApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'ObraControl',
+      title: 'ObrasControl',
       theme: ThemeData(
         textTheme: GoogleFonts.interTextTheme(),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),

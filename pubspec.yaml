@@ -1,5 +1,5 @@
 name: obra_control
-description: "ObraControl es una app de gestión de obras y finanzas para profesionales de la construcción. Permite controlar obras, tareas, materiales, pagos, cobros, calendario y recordatorios desde el móvil."
+description: "ObrasControl es una app de gestión de obras y finanzas para profesionales de la construcción. Permite controlar obras, tareas, materiales, pagos, cobros, calendario y recordatorios desde el móvil."
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -28,6 +28,8 @@ dependencies:
   google_fonts: ^6.3.0
   fl_chart: ^1.0.0
   flutter_native_splash: ^2.4.6
+  android_alarm_manager_plus: ^3.0.4
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:

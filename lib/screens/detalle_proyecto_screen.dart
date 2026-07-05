@@ -18,43 +18,52 @@ class DetalleProyectoScreen extends StatefulWidget {
 
 class _DetalleProyectoScreenState extends State<DetalleProyectoScreen> {
   Future<void> editarEstado() async {
-    String estado = widget.proyecto.estado;
-
     await showDialog(
       context: context,
       builder: (_) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              title: const Text('Estado del proyecto'),
-              content: DropdownButton<String>(
-                value: estado,
-                isExpanded: true,
-                items: const [
-                  DropdownMenuItem(value: 'Pendiente', child: Text('Pendiente')),
-                  DropdownMenuItem(value: 'En curso', child: Text('En curso')),
-                  DropdownMenuItem(value: 'Terminado', child: Text('Terminado')),
+        return SimpleDialog(
+          title: const Text('Estado del proyecto'),
+          children: [
+            SimpleDialogOption(
+              onPressed: () {
+                setState(() => widget.proyecto.estado = 'Pendiente');
+                Navigator.pop(context);
+              },
+              child: Row(
+                children: [
+                  Icon(Icons.radio_button_unchecked, color: Colors.grey.shade500),
+                  const SizedBox(width: 12),
+                  const Text('Pendiente', style: TextStyle(fontSize: 16)),
                 ],
-                onChanged: (value) {
-                  if (value == null) return;
-                  setDialogState(() => estado = value);
-                },
               ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancelar'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() => widget.proyecto.estado = estado);
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Guardar'),
-                ),
-              ],
-            );
-          },
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                setState(() => widget.proyecto.estado = 'En curso');
+                Navigator.pop(context);
+              },
+              child: const Row(
+                children: [
+                  Icon(Icons.play_circle_outline, color: Colors.orange),
+                  SizedBox(width: 12),
+                  Text('En curso', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                setState(() => widget.proyecto.estado = 'Terminado');
+                Navigator.pop(context);
+              },
+              child: const Row(
+                children: [
+                  Icon(Icons.check_circle_outline, color: Colors.green),
+                  SizedBox(width: 12),
+                  Text('Terminado', style: TextStyle(fontSize: 16)),
+                ],
+              ),
+            ),
+          ],
         );
       },
     );
@@ -158,15 +167,7 @@ class _DetalleProyectoScreenState extends State<DetalleProyectoScreen> {
                     : Colors.grey,
             titulo: 'Estado',
             subtitulo: proyecto.estado,
-            trailing: PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert, color: Colors.grey.shade700),
-              onSelected: (value) {
-                if (value == 'editar') editarEstado();
-              },
-              itemBuilder: (_) => const [
-                PopupMenuItem(value: 'editar', child: Text('Editar')),
-              ],
-            ),
+            onTap: editarEstado,
           ),
           filaDetalle(
             icono: Icons.calendar_month,

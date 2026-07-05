@@ -139,7 +139,7 @@ class _MaterialesScreenState extends State<MaterialesScreen> {
             child: materiales.isEmpty
                 ? const Center(child: Text('No hay materiales'))
                 : ListView.builder(
-                    padding: const EdgeInsets.only(top: 8, bottom: 80),
+                    padding: const EdgeInsets.only(top: 8, bottom: 16),
                     itemCount: materiales.length,
                     itemBuilder: (context, index) {
                       final material = materiales[index];
@@ -179,8 +179,8 @@ class _MaterialesScreenState extends State<MaterialesScreen> {
                     },
                   ),
           ),
-          Container(
-            margin: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+          Padding(
+            padding: EdgeInsets.fromLTRB(12, 0, 12, MediaQuery.of(context).padding.bottom + 80),
             child: Card(
               elevation: 0.5,
               shape: RoundedRectangleBorder(
@@ -190,15 +190,17 @@ class _MaterialesScreenState extends State<MaterialesScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       'Total: ${total.toStringAsFixed(2)} €',
+                      textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                     ),
                     const SizedBox(height: 6),
                     Text(
                       'Total + IVA (21%): ${totalConIva.toStringAsFixed(2)} €',
+                      textAlign: TextAlign.center,
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.grey.shade600),
                     ),
                   ],

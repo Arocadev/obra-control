@@ -38,17 +38,27 @@ class EstadisticasScreen extends StatelessWidget {
     Widget? leyenda,
   }) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const Divider(height: 1),
         const SizedBox(height: 20),
-        Row(
+        Stack(
+          alignment: Alignment.center,
           children: [
-            const SizedBox(width: 4),
-            Expanded(child: Text(titulo, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700))),
-            IconButton(
-              icon: const Icon(Icons.info_outline, color: Colors.orange, size: 22),
-              onPressed: () => _mostrarInfo(context, titulo, infoTexto),
+            Center(
+              child: Text(
+                titulo,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                icon: const Icon(Icons.info_outline, color: Colors.orange, size: 20),
+                onPressed: () => _mostrarInfo(context, titulo, infoTexto),
+              ),
             ),
           ],
         ),

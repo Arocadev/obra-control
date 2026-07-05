@@ -77,15 +77,8 @@ class _EconomiaScreenState extends State<EconomiaScreen> {
             padding: const EdgeInsets.only(top: 4),
             child: Text(valor, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: color)),
           ),
-          trailing: PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert, color: Colors.grey.shade700),
-            onSelected: (value) {
-              if (value == 'editar') onEditar();
-            },
-            itemBuilder: (_) => const [
-              PopupMenuItem(value: 'editar', child: Text('Editar')),
-            ],
-          ),
+          trailing: Icon(Icons.edit_outlined, color: Colors.grey.shade400, size: 20),
+          onTap: onEditar,
         ),
       );
     }

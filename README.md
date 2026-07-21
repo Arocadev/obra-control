@@ -62,6 +62,42 @@ Exporta e importa todos los datos en formato JSON para no perder nada al cambiar
 
 ---
 
+## 📸 Capturas
+
+<div align="center">
+
+| Lista de proyectos | Detalle de proyecto | Pagos | Cobros |
+|:-:|:-:|:-:|:-:|
+| ![Lista de proyectos](assets/lista-proyecto.png) | ![Detalle](assets/detalles-proyecto.png) | ![Pagos](assets/lista-pago.png) | ![Cobros](assets/lista-cobro.png) |
+
+| Resumen | Gráficas | Calendario |
+|:-:|:-:|:-:|
+| ![Resumen](assets/resumen.png) | ![Gráficas](assets/grafica.png) | ![Calendario](assets/calendario.png) |
+
+</div>
+
+---
+
+## 🎬 Demo
+
+**Crear proyecto**
+
+![Crear proyecto](assets/crear-proyecto.gif)
+
+**Finanzas**
+
+![Finanzas](assets/crear-finanza.gif)
+
+**Calendario**
+
+![Calendario](assets/calendario.gif)
+
+**Estadísticas**
+
+![Estadísticas](assets/resumen.gif)
+
+---
+
 ## 🛠️ Stack tecnológico
 
 | Capa | Tecnología |
@@ -117,8 +153,8 @@ lib/
 ## 🚀 Instalación y arranque
 
 ```bash
-git clone https://github.com/Arocadev/gest-pro
-cd gest-pro
+git clone https://github.com/Arocadev/gest_pro
+cd gest_pro
 
 # Instalar dependencias
 flutter pub get
@@ -158,6 +194,7 @@ Los datos se almacenan localmente en el dispositivo con Hive. Para no perder los
 ## 🗺️ Roadmap
 
 - [x] APK disponible en GitHub Releases
+- [ ] Capturas y demo en el portfolio (aroca.dev)
 - [ ] Sentinel — plataforma de despliegue propia
 
 ---

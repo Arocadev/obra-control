@@ -157,9 +157,8 @@ Los datos se almacenan localmente en el dispositivo con Hive. Para no perder los
 
 ## 🗺️ Roadmap
 
-- [ ] Capturas de pantalla y demo en vídeo
-- [ ] APK disponible en GitHub Releases
-- [ ] Despliegue en aroca.dev
+- [x] APK disponible en GitHub Releases
+- [ ] Sentinel — plataforma de despliegue propia
 
 ---
 
